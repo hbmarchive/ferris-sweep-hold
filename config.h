@@ -60,5 +60,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // Tapping term for tapdance keys
 #define TAPPING_TERM_TAPDANCE 160
 
+// Tapping term for homerow layer toggle keys
+#define TAPPING_TERM_LAYER 220
+
 // Enable key repeat - disabled for now
 // #define QUICK_TAP_TERM 100

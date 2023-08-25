@@ -37,44 +37,44 @@ static bool m_altt_pressed = false;
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
   [BASE_LAYER] = LAYOUT_split_3x5_2(
-    LSFT_T(KC_Q),   LCTL_T(KC_W),         LALT_T(KC_F),        LGUI_T(KC_P),         KC_B,   KC_J, LGUI_T(KC_L),         LALT_T(KC_U),           LCTL_T(KC_Y),           LSFT_T(KC_ESC),
-    KC_A,           KC_R,                 KC_S,                KC_T,                 KC_G,   KC_M, KC_N,                 KC_E,                   KC_I,                   KC_O,
-    KC_Z,           LT(CTRL_LAYER, KC_X), LT(NAV_LAYER, KC_C), LT(RSYM_LAYER, KC_D), KC_G,   KC_K, LT(LSYM_LAYER, KC_H), LT(NUM_LAYER, KC_COMM), LT(FUNC_LAYER, KC_DOT), OSL(SCUT_LAYER),
-    OSM(MOD_LSFT),  TD(TD_SPC_TAB),       KC_ENT,              KC_BSPC
+    LSFT_T(KC_Q),   LCTL_T(KC_W),         LALT_T(KC_F),        LGUI_T(KC_P),         KC_B,   KC_J, LGUI_T(KC_L),         LALT_T(KC_U),           LCTL_T(KC_Y),           LSFT_T(KC_BSPC),
+    KC_A,           LT(CTRL_LAYER, KC_R), LT(NAV_LAYER, KC_S), LT(RSYM_LAYER, KC_T), KC_G,   KC_M, LT(LSYM_LAYER, KC_N), LT(NUM_LAYER, KC_E),    LT(FUNC_LAYER, KC_I),   KC_O,
+    KC_Z,           KC_X,                 KC_C,                KC_D,                 KC_V,   KC_K, KC_H,                 KC_COMM,                KC_DOT,                 OSL(SCUT_LAYER),
+    OSM(MOD_LSFT),  TD(TD_SPC_TAB),       KC_ENT,              KC_ESC
   ),
 
   [LSYM_LAYER] = LAYOUT_split_3x5_2(
-    KC_EXLM,  LSFT(KC_2),     LSFT(KC_3),  KC_DLR,   KC_PERC,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,
-    KC_TRNS,  LSFT(KC_NUBS),  KC_LBRC,     KC_LCBR,  KC_LPRN,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,
-    KC_TRNS,  KC_NUBS,        KC_RBRC,     KC_RCBR,  KC_RPRN,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,
-    KC_TRNS,  KC_TRNS,        KC_TRNS,     KC_TRNS
+    KC_EXLM,        LSFT(KC_2),     LSFT(KC_3),  KC_DLR,   KC_PERC,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,
+    LSFT(KC_SLSH),  LSFT(KC_NUBS),  KC_LBRC,     KC_LCBR,  KC_LPRN,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,
+    KC_SLSH,        KC_NUBS,        KC_RBRC,     KC_RCBR,  KC_RPRN,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,
+    KC_TRNS,        KC_TRNS,        KC_TRNS,     KC_TRNS
   ),
 
   [RSYM_LAYER] = LAYOUT_split_3x5_2(
     KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_CIRC,  KC_AMPR,        KC_ASTR,        KC_UNDS,  KC_PLUS,
     KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_COLN,  LSFT(KC_QUOT),  LSFT(KC_BSLS),  KC_MINS,  KC_EQL,
-    KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_SCLN,  KC_QUOT,        KC_BSLS,        KC_GRV,   KC_TRNS,
+    KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_SCLN,  KC_QUOT,        KC_BSLS,        KC_GRV,   KC_NO,
     KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS
   ),
 
   [NUM_LAYER] = LAYOUT_split_3x5_2(
     KC_PAST,  KC_1,    KC_2,     KC_3,    KC_PPLS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,
     KC_PSLS,  KC_4,    KC_5,     KC_6,    KC_PMNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,
-    KC_DOT,   KC_7,    KC_8,     KC_9,    KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,
+    KC_DOT,   KC_7,    KC_8,     KC_9,    KC_NO,    KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,
     KC_0,     KC_EQL,  KC_TRNS,  KC_TRNS
   ),
 
   [NAV_LAYER] = LAYOUT_split_3x5_2(
-    KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  LCTL(LGUI(KC_LEFT)),  LCTL(KC_TAB),  M_ALTT,   LCTL(LGUI(KC_RGHT)),
+    KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_NO,    LCTL(LGUI(KC_LEFT)),  LCTL(KC_TAB),  M_ALTT,   LCTL(LGUI(KC_RGHT)),
     KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_WH_U,  KC_LEFT,              KC_DOWN,       KC_UP,    KC_RGHT,
     KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_WH_D,  KC_HOME,              KC_PGDN,       KC_PGUP,  KC_END,
     KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS
   ),
 
   [FUNC_LAYER] = LAYOUT_split_3x5_2(
-    KC_F1,    KC_F2,    KC_F3,    KC_F4,   KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,
-    KC_F5,    KC_F6,    KC_F7,    KC_F8,   KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,
-    KC_F9,    KC_F10,   KC_F11,   KC_F12,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,
+    KC_F1,    KC_F2,    KC_F3,    KC_F4,   KC_NO,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,
+    KC_F5,    KC_F6,    KC_F7,    KC_F8,   KC_NO,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,
+    KC_F9,    KC_F10,   KC_F11,   KC_F12,  KC_NO,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,
     KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS
   ),
 
@@ -208,6 +208,14 @@ uint16_t get_tapping_term(uint16_t keycode, keyrecord_t *record) {
     case LCTL_T(KC_Y):
     case LSFT_T(KC_BSPC):
       return TAPPING_TERM_MODS;
+    // Set the tapping term for the homerow layer toggle keys.
+    case LT(CTRL_LAYER, KC_R):
+    case LT(NAV_LAYER, KC_S):
+    case LT(RSYM_LAYER, KC_T):
+    case LT(LSYM_LAYER, KC_N):
+    case LT(NUM_LAYER, KC_E):
+    case LT(FUNC_LAYER, KC_I):
+      return TAPPING_TERM_LAYER;
     // Set the tapping term for tap dance keys.
     case TD(TD_SPC_TAB):
       return TAPPING_TERM_TAPDANCE;

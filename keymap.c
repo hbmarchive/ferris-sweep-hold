@@ -17,8 +17,21 @@ enum my_keycodes {
     M_ESCV,
     M_DDS,
     M_ALTT,
-    M_SCM1,
-    M_ETCTLZ
+    M_APP1,
+    M_APP2,
+    M_APP3,
+    M_APP4,
+    M_1PASS,
+    M_NDESK,
+    M_PDESK,
+    M_XTAB,
+    M_WMIN,
+    M_WMAX,
+    M_NTRM,
+    M_EMOJI,
+    M_ETCTLZ,
+    M_ISCB,
+    M_ISWIN
 };
 
 enum {
@@ -33,6 +46,10 @@ tap_dance_action_t tap_dance_actions[] = {
 // Stores state of M_ALTT macro - true if we are currently tabbing between
 // windows.
 static bool m_altt_pressed = false;
+
+// Toggle for keys that affect the the desktop - value can be changed in
+// function layer
+static bool m_is_chromebook = false;
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
@@ -65,7 +82,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   ),
 
   [NAV_LAYER] = LAYOUT_split_3x5_2(
-    KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_NO,    LCTL(LGUI(KC_LEFT)),  LCTL(KC_TAB),  M_ALTT,   LCTL(LGUI(KC_RGHT)),
+    KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  M_XTAB,    M_PDESK,  LCTL(KC_TAB),  M_ALTT,   M_NDESK,
     KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_WH_U,  KC_LEFT,              KC_DOWN,       KC_UP,    KC_RGHT,
     KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_WH_D,  KC_HOME,              KC_PGDN,       KC_PGUP,  KC_END,
     KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS
@@ -80,16 +97,16 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
   [CTRL_LAYER] = LAYOUT_split_3x5_2(
     KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_PSCR,  KC_TRNS,
-    KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_BRIU,  KC_VOLU,  KC_MNXT,  KC_MPLY,  KC_TRNS,
-    KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_BRID,  KC_VOLD,  KC_MPRV,  KC_MUTE,  KC_TRNS,
+    KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_BRIU,  KC_VOLU,  KC_MNXT,  KC_MPLY,  M_ISWIN,
+    KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_BRID,  KC_VOLD,  KC_MPRV,  KC_MUTE,   M_ISCB,
     KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS
   ),
 
   [SCUT_LAYER] = LAYOUT_split_3x5_2(
-    M_ESCQ,      M_ESCW,      LCTL(KC_F),  KC_NO,               LCTL(KC_B),  HYPR(KC_J),  KC_NO,             KC_NO,          KC_NO,     KC_DEL,
-    HYPR(KC_1),  HYPR(KC_2),  HYPR(KC_3),  LSFT(LCTL(KC_SPC)),  HYPR(KC_4),  HYPR(KC_M),  LSFT(LCTL(KC_1)),  LGUI(KC_SCLN),  M_ETCTLZ,  KC_INS,
-    KC_CAPS,     LCTL(KC_X),  LCTL(KC_C),  LSFT(LCTL(KC_C)),    LCTL(KC_V),  HYPR(KC_K),  KC_NO,             KC_NO,          M_DDS,     KC_SLSH,
-    KC_TRNS,     KC_TRNS,     KC_TRNS,     KC_TRNS
+    M_ESCQ,   M_ESCW,      LCTL(KC_F),  KC_NO,             LCTL(KC_B),  M_WMAX,      KC_NO,   KC_NO,    KC_NO,     KC_DEL,
+    M_APP1,   M_APP2,      M_APP3,      M_1PASS,           M_APP4,      M_WMIN,      M_NTRM,  M_EMOJI,  M_ETCTLZ,  KC_INS,
+    KC_CAPS,  LCTL(KC_X),  LCTL(KC_C),  LSFT(LCTL(KC_C)),  LCTL(KC_V),  HYPR(KC_K),  KC_NO,   KC_NO,    M_DDS,     KC_SLSH,
+    KC_TRNS,  KC_TRNS,     KC_TRNS,     KC_TRNS
   )
 
 };
@@ -119,11 +136,71 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         tap_code(KC_TAB);
       }
       break;
-    case M_SCM1:
+    case M_APP1:
       if (record->event.pressed) {
-        SEND_STRING(SS_DOWN(X_LSFT)SS_DOWN(X_LCTL));
-        SEND_STRING(SS_DELAY(100)SS_TAP(X_BTN1));
-        SEND_STRING(SS_UP(X_LCTL)SS_UP(X_LSFT));
+        if (m_is_chromebook) {
+          SEND_STRING(SS_DOWN(X_LALT));
+          SEND_STRING(SS_TAP(X_1));
+          SEND_STRING(SS_UP(X_LALT));
+        } else {
+          SEND_STRING(SS_DOWN(X_LSFT)SS_DOWN(X_LCTL)SS_DOWN(X_LALT)SS_DOWN(X_LGUI));
+          SEND_STRING(SS_TAP(X_1));
+          SEND_STRING(SS_UP(X_LGUI)SS_UP(X_LALT)SS_UP(X_LCTL)SS_UP(X_LSFT));
+        }
+      }
+      break;
+    case M_APP2:
+      if (record->event.pressed) {
+        if (m_is_chromebook) {
+          SEND_STRING(SS_DOWN(X_LALT));
+          SEND_STRING(SS_TAP(X_2));
+          SEND_STRING(SS_UP(X_LALT));
+        } else {
+          SEND_STRING(SS_DOWN(X_LSFT)SS_DOWN(X_LCTL)SS_DOWN(X_LALT)SS_DOWN(X_LGUI));
+          SEND_STRING(SS_TAP(X_2));
+          SEND_STRING(SS_UP(X_LGUI)SS_UP(X_LALT)SS_UP(X_LCTL)SS_UP(X_LSFT));
+        }
+      }
+      break;
+    case M_APP3:
+      if (record->event.pressed) {
+        if (m_is_chromebook) {
+          SEND_STRING(SS_DOWN(X_LALT));
+          SEND_STRING(SS_TAP(X_3));
+          SEND_STRING(SS_UP(X_LALT));
+        } else {
+          SEND_STRING(SS_DOWN(X_LSFT)SS_DOWN(X_LCTL)SS_DOWN(X_LALT)SS_DOWN(X_LGUI));
+          SEND_STRING(SS_TAP(X_3));
+          SEND_STRING(SS_UP(X_LGUI)SS_UP(X_LALT)SS_UP(X_LCTL)SS_UP(X_LSFT));
+        }
+      }
+      break;
+    case M_APP4:
+      if (record->event.pressed) {
+        if (m_is_chromebook) {
+          SEND_STRING(SS_DOWN(X_LALT));
+          SEND_STRING(SS_TAP(X_4));
+          SEND_STRING(SS_UP(X_LALT));
+        } else {
+          SEND_STRING(SS_DOWN(X_LSFT)SS_DOWN(X_LCTL)SS_DOWN(X_LALT)SS_DOWN(X_LGUI));
+          SEND_STRING(SS_TAP(X_4));
+          SEND_STRING(SS_UP(X_LGUI)SS_UP(X_LALT)SS_UP(X_LCTL)SS_UP(X_LSFT));
+        }
+      }
+      break;
+    case M_1PASS:
+      if (record->event.pressed) {
+        if (m_is_chromebook) {
+          SEND_STRING(SS_DOWN(X_LALT)SS_TAP(X_1)SS_UP(X_LALT));
+          SEND_STRING(SS_DELAY(100));
+          SEND_STRING(SS_DOWN(X_LSFT)SS_DOWN(X_LCTL));
+          SEND_STRING(SS_TAP(X_X));
+          SEND_STRING(SS_UP(X_LCTL)SS_UP(X_LSFT));
+        } else {
+          SEND_STRING(SS_DOWN(X_LSFT)SS_DOWN(X_LCTL));
+          SEND_STRING(SS_TAP(X_SPC));
+          SEND_STRING(SS_UP(X_LCTL)SS_UP(X_LSFT));
+        }
       }
       break;
     case M_ESCQ:
@@ -153,11 +230,104 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         SEND_STRING(SS_DOWN(X_LSFT)SS_TAP(X_V)SS_UP(X_LSFT));
       }
       break;
+    case M_NDESK:
+      if (record->event.pressed) {
+        if (m_is_chromebook) {
+          SEND_STRING(SS_DOWN(X_LGUI));
+          SEND_STRING(SS_TAP(X_RBRC));
+          SEND_STRING(SS_UP(X_LGUI));
+        } else {
+          SEND_STRING(SS_DOWN(X_LCTL)SS_DOWN(X_LGUI));
+          SEND_STRING(SS_TAP(X_RGHT));
+          SEND_STRING(SS_UP(X_LGUI)SS_UP(X_LCTL));
+        }
+      }
+      break;
+    case M_PDESK:
+      if (record->event.pressed) {
+        if (m_is_chromebook) {
+          SEND_STRING(SS_DOWN(X_LGUI));
+          SEND_STRING(SS_TAP(X_LBRC));
+          SEND_STRING(SS_UP(X_LGUI));
+        } else {
+          SEND_STRING(SS_DOWN(X_LCTL)SS_DOWN(X_LGUI));
+          SEND_STRING(SS_TAP(X_LEFT));
+          SEND_STRING(SS_UP(X_LGUI)SS_UP(X_LCTL));
+        }
+      }
+      break;
+    case M_XTAB:
+      if (record->event.pressed) {
+        if (m_is_chromebook) {
+          SEND_STRING(SS_DOWN(X_LCTL)SS_TAP(X_W)SS_UP(X_LCTL));
+        } else {
+          SEND_STRING(SS_DOWN(X_LCTL)SS_TAP(X_F4)SS_UP(X_LCTL));
+        }
+      }
+      break;
+    case M_WMIN:
+      if (record->event.pressed) {
+        if (m_is_chromebook) {
+          SEND_STRING(SS_DOWN(X_LALT));
+          SEND_STRING(SS_TAP(X_MINS));
+          SEND_STRING(SS_UP(X_LALT));
+        } else {
+          SEND_STRING(SS_DOWN(X_LSFT)SS_DOWN(X_LCTL)SS_DOWN(X_LALT)SS_DOWN(X_LGUI));
+          SEND_STRING(SS_TAP(X_M));
+          SEND_STRING(SS_UP(X_LGUI)SS_UP(X_LALT)SS_UP(X_LCTL)SS_UP(X_LSFT));
+        }
+      }
+      break;
+    case M_WMAX:
+      if (record->event.pressed) {
+        if (m_is_chromebook) {
+          SEND_STRING(SS_DOWN(X_LALT));
+          SEND_STRING(SS_TAP(X_EQL));
+          SEND_STRING(SS_UP(X_LALT));
+        } else {
+          SEND_STRING(SS_DOWN(X_LSFT)SS_DOWN(X_LCTL)SS_DOWN(X_LALT)SS_DOWN(X_LGUI));
+          SEND_STRING(SS_TAP(X_J));
+          SEND_STRING(SS_UP(X_LGUI)SS_UP(X_LALT)SS_UP(X_LCTL)SS_UP(X_LSFT));
+        }
+      }
+      break;
+    case M_NTRM:
+      if (record->event.pressed) {
+        if (m_is_chromebook) {
+          SEND_STRING(SS_DOWN(X_LCTL)SS_TAP(X_T)SS_UP(X_LCTL));
+        } else {
+          SEND_STRING(SS_DOWN(X_LSFT)SS_DOWN(X_LCTL));
+          SEND_STRING(SS_TAP(X_1));
+          SEND_STRING(SS_UP(X_LCTL)SS_UP(X_LSFT));
+        }
+      }
+      break;
+    case M_EMOJI:
+      if (record->event.pressed) {
+        if (m_is_chromebook) {
+          SEND_STRING(SS_DOWN(X_LSFT)SS_DOWN(X_LGUI));
+          SEND_STRING(SS_TAP(X_SPC));
+          SEND_STRING(SS_UP(X_LGUI)SS_UP(X_LSFT));
+        } else {
+          SEND_STRING(SS_DOWN(X_LGUI)SS_TAP(X_SCLN)SS_UP(X_LGUI));
+        }
+      }
+      break;
     case M_ETCTLZ:
       if (record->event.pressed) {
         SEND_STRING(SS_TAP(X_ENT));
         SEND_STRING(SS_DOWN(X_LSFT)SS_TAP(X_BSLS)SS_UP(X_LSFT));
         SEND_STRING(SS_DOWN(X_LCTL)SS_TAP(X_Z)SS_UP(X_LCTL));
+      }
+      break;
+    case M_ISCB:
+      if (record->event.pressed) {
+        m_is_chromebook = true;
+      }
+      break;
+    case M_ISWIN:
+      if (record->event.pressed) {
+        m_is_chromebook = false;
       }
       break;
   }
@@ -167,31 +337,15 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 
 void post_process_record_user(uint16_t keycode, keyrecord_t *record) {
   switch (keycode) {
-    // Return to the base layer if space, enter, home/end or a function key is
-    // pressed.
+    // Return to the base layer if space or enter is pressed.
     case TD(TD_SPC_TAB):
     case KC_ENT:
-    case KC_PSCR:
-    case KC_F1 ... KC_F12:
       if (!record->event.pressed) { layer_move(BASE_LAYER); }
       break;
-    // Cancel caps lock if escape is pressed.
+    // Cancel caps lock and return to the base layer if escape is pressed.
     case KC_ESC:
       if (host_keyboard_led_state().caps_lock) { tap_code(KC_CAPS); }
       if (!record->event.pressed) { layer_move(BASE_LAYER); }
-      break;
-    // Return to the nav layer if symbols in the func layer have been pressed.
-    case KC_ASTR:
-    case KC_PLUS:
-    case KC_MINS:
-    case KC_EQL:
-    case KC_DOT:
-    case KC_SLSH:
-      if (!record->event.pressed) {
-        if (IS_LAYER_ON(FUNC_LAYER)) {
-          layer_move(NAV_LAYER);
-        }
-      }
       break;
   }
 }

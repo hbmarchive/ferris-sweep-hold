@@ -15,6 +15,8 @@ enum my_keycodes {
     M_ESCQ = SAFE_RANGE,
     M_ESCW,
     M_ESCV,
+    M_CSPC,
+    M_DSC,
     M_DDS,
     M_ALTT,
     M_APP1,
@@ -105,7 +107,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   [SCUT_LAYER] = LAYOUT_split_3x5_2(
     M_ESCQ,   M_ESCW,      LCTL(KC_F),  KC_NO,             LCTL(KC_B),  M_WMAX,      KC_NO,   KC_NO,    KC_NO,     KC_DEL,
     M_APP1,   M_APP2,      M_APP3,      M_1PASS,           M_APP4,      M_WMIN,      M_NTRM,  M_EMOJI,  M_ETCTLZ,  KC_INS,
-    KC_CAPS,  LCTL(KC_X),  LCTL(KC_C),  LSFT(LCTL(KC_C)),  LCTL(KC_V),  HYPR(KC_K),  KC_NO,   KC_NO,    M_DDS,     KC_SLSH,
+    KC_CAPS,  LCTL(KC_X),  LCTL(KC_C),  LSFT(LCTL(KC_C)),  LCTL(KC_V),  HYPR(KC_K),  M_DDS,   M_CSPC,    M_DSC,     KC_SLSH,
     KC_TRNS,  KC_TRNS,     KC_TRNS,     KC_TRNS
   )
 
@@ -215,6 +217,17 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         SEND_STRING(SS_TAP(X_ESC)":wq"SS_TAP(X_ENT));
       } else {
         layer_move(BASE_LAYER);
+      }
+      break;
+    case M_CSPC:
+      if (record->event.pressed) {
+        SEND_STRING(SS_TAP(X_COMM)SS_TAP(X_SPC));
+      }
+      break;
+    case M_DSC:
+      if (record->event.pressed) {
+        SEND_STRING(SS_TAP(X_DOT)SS_TAP(X_SPC));
+        add_oneshot_mods(MOD_LSFT);
       }
       break;
     case M_DDS:

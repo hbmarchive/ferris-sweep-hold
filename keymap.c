@@ -6,7 +6,7 @@ enum my_layers {
   RSYM_LAYER,
   NUM_LAYER,
   NAV_LAYER,
-  FUNC_LAYER,
+  FKEYS_LAYER,
   CTRL_LAYER,
   SCUT_LAYER
 };
@@ -57,7 +57,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
   [BASE_LAYER] = LAYOUT_split_3x5_2(
     LSFT_T(KC_Q),   LCTL_T(KC_W),         LALT_T(KC_F),        LGUI_T(KC_P),         KC_B,   KC_J, LGUI_T(KC_L),         LALT_T(KC_U),           LCTL_T(KC_Y),           LSFT_T(KC_BSPC),
-    KC_A,           LT(CTRL_LAYER, KC_R), LT(NAV_LAYER, KC_S), LT(RSYM_LAYER, KC_T), KC_G,   KC_M, LT(LSYM_LAYER, KC_N), LT(NUM_LAYER, KC_E),    LT(FUNC_LAYER, KC_I),   KC_O,
+    KC_A,           LT(CTRL_LAYER, KC_R), LT(NAV_LAYER, KC_S), LT(RSYM_LAYER, KC_T), KC_G,   KC_M, LT(LSYM_LAYER, KC_N), LT(NUM_LAYER, KC_E),    LT(FKEYS_LAYER, KC_I),   KC_O,
     KC_Z,           KC_X,                 KC_C,                KC_D,                 KC_V,   KC_K, KC_H,                 KC_COMM,                KC_DOT,                 OSL(SCUT_LAYER),
     OSM(MOD_LSFT),  TD(TD_SPC_TAB),       KC_ENT,              KC_ESC
   ),
@@ -90,10 +90,10 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS
   ),
 
-  [FUNC_LAYER] = LAYOUT_split_3x5_2(
-    KC_F1,    KC_F2,    KC_F3,    KC_F4,   KC_NO,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,
-    KC_F5,    KC_F6,    KC_F7,    KC_F8,   KC_NO,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,
-    KC_F9,    KC_F10,   KC_F11,   KC_F12,  KC_NO,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,
+  [FKEYS_LAYER] = LAYOUT_split_3x5_2(
+    KC_TRNS,  KC_F1,    KC_F2,    KC_F3,   KC_NO,   KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,
+    KC_TRNS,  KC_F4,    KC_F5,    KC_F6,   KC_NO,   KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,
+    KC_TRNS,  KC_F7,    KC_F80,   KC_F9,   KC_F10,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,
     KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS
   ),
 
@@ -381,7 +381,7 @@ uint16_t get_tapping_term(uint16_t keycode, keyrecord_t *record) {
     case LT(RSYM_LAYER, KC_T):
     case LT(LSYM_LAYER, KC_N):
     case LT(NUM_LAYER, KC_E):
-    case LT(FUNC_LAYER, KC_I):
+    case LT(FKEYS_LAYER, KC_I):
       return TAPPING_TERM_LAYER;
     // Set the tapping term for tap dance keys.
     case TD(TD_SPC_TAB):

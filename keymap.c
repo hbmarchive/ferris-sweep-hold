@@ -37,12 +37,18 @@ enum my_keycodes {
 };
 
 enum {
-  TD_SPC_TAB
+  TD_SPC_TAB,
+  TD_Q_ESC,
+  TD_A_TAB,
+  TD_Z_CAPS
 };
 
 // Tap Dance definitions
 tap_dance_action_t tap_dance_actions[] = {
-    [TD_SPC_TAB] = ACTION_TAP_DANCE_DOUBLE(KC_SPC, KC_TAB)
+    [TD_SPC_TAB] = ACTION_TAP_DANCE_DOUBLE(KC_SPC, KC_TAB),
+    [TD_Q_ESC] = ACTION_TAP_DANCE_DOUBLE(KC_Q, KC_ESC),
+    [TD_A_TAB] = ACTION_TAP_DANCE_DOUBLE(KC_A, KC_TAB),
+    [TD_Z_CAPS] = ACTION_TAP_DANCE_DOUBLE(KC_Z, KC_CAPS)
 };
 
 // Stores state of M_ALTT macro - true if we are currently tabbing between
@@ -53,13 +59,22 @@ static bool m_altt_pressed = false;
 // function layer
 static bool m_is_chromebook = false;
 
+// Used to temporarily store the state of the mod keys.
+static uint8_t mod_state = 0;
+
+// State for managing shift backspace behaviour.
+static bool kc_del_registered = false;
+
+// State for managing shift up behaviour.
+static bool kc_down_registered = false;
+
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
   [BASE_LAYER] = LAYOUT_split_3x5_2(
-    LSFT_T(KC_Q),   LCTL_T(KC_W),         LALT_T(KC_F),        LGUI_T(KC_P),         KC_B,   KC_J, LGUI_T(KC_L),         LALT_T(KC_U),           LCTL_T(KC_Y),           LSFT_T(KC_BSPC),
-    KC_A,           LT(CTRL_LAYER, KC_R), LT(NAV_LAYER, KC_S), LT(RSYM_LAYER, KC_T), KC_G,   KC_M, LT(LSYM_LAYER, KC_N), LT(NUM_LAYER, KC_E),    LT(FKEYS_LAYER, KC_I),   KC_O,
-    KC_Z,           KC_X,                 KC_C,                KC_D,                 KC_V,   KC_K, KC_H,                 KC_COMM,                KC_DOT,                 OSL(SCUT_LAYER),
-    OSM(MOD_LSFT),  TD(TD_SPC_TAB),       KC_ENT,              KC_ESC
+    TD(TD_Q_ESC),   LCTL_T(KC_W),          LALT_T(KC_F),         LGUI_T(KC_P),          KC_B,  KC_J,  LGUI_T(KC_L),          LALT_T(KC_U),         LCTL_T(KC_Y),           LSFT_T(KC_BSPC),
+    TD(TD_A_TAB),   LT(CTRL_LAYER, KC_R),  LT(NAV_LAYER, KC_S),  LT(RSYM_LAYER, KC_T),  KC_G,  KC_M,  LT(LSYM_LAYER, KC_N),  LT(NUM_LAYER, KC_E),  LT(FKEYS_LAYER, KC_I),  KC_O,
+    TD(TD_Z_CAPS),  KC_X,                  KC_C,                 KC_D,                  KC_V,  KC_K,  KC_H,                  KC_COMM,              KC_DOT,                 OSL(SCUT_LAYER),
+    OSM(MOD_LSFT),  TD(TD_SPC_TAB),        KC_ENT,               KC_UP
   ),
 
   [LSYM_LAYER] = LAYOUT_split_3x5_2(
@@ -84,30 +99,30 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   ),
 
   [NAV_LAYER] = LAYOUT_split_3x5_2(
-    KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  M_XTAB,    M_PDESK,  LCTL(KC_TAB),  M_ALTT,   M_NDESK,
-    KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_WH_U,  KC_LEFT,              KC_DOWN,       KC_UP,    KC_RGHT,
-    KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_WH_D,  KC_HOME,              KC_PGDN,       KC_PGUP,  KC_END,
+    KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  M_XTAB,   M_PDESK,  LCTL(KC_TAB),  M_ALTT,   M_NDESK,
+    KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_WH_U,  KC_LEFT,  KC_DOWN,       KC_UP,    KC_RGHT,
+    KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_WH_D,  KC_HOME,  KC_PGDN,       KC_PGUP,  KC_END,
     KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS
   ),
 
   [FKEYS_LAYER] = LAYOUT_split_3x5_2(
-    KC_TRNS,  KC_F1,    KC_F2,    KC_F3,   KC_NO,   KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,
-    KC_TRNS,  KC_F4,    KC_F5,    KC_F6,   KC_NO,   KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,
-    KC_TRNS,  KC_F7,    KC_F8,    KC_F9,   KC_F10,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,
-    KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS
+    KC_INS,        KC_F1,    KC_F2,    KC_F3,   KC_NO,   KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,
+    LSFT(KC_INS),  KC_F4,    KC_F5,    KC_F6,   KC_NO,   KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,
+    LCTL(KC_INS),  KC_F7,    KC_F8,    KC_F9,   KC_F10,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,
+    KC_TRNS,       KC_TRNS,  KC_TRNS,  KC_TRNS
   ),
 
-  [CTRL_LAYER] = LAYOUT_split_3x5_2(
-    KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_PSCR,  KC_TRNS,
-    KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_BRIU,  KC_VOLU,  KC_MNXT,  KC_MPLY,  M_ISWIN,
-    KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_BRID,  KC_VOLD,  KC_MPRV,  KC_MUTE,   M_ISCB,
-    KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS
-  ),
+  [CTRL_LAYER]  = LAYOUT_split_3x5_2(
+    KC_TRNS,        KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  M_ISWIN,  M_ISCB,   KC_PSCR,  KC_TRNS,
+    KC_TRNS,        KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_BRIU,  KC_VOLU,  KC_MNXT,  KC_MPLY,  KC_TRNS,
+    KC_TRNS,        KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_BRID,  KC_VOLD,  KC_MPRV,  KC_MUTE,  KC_TRNS,
+    KC_TRNS,        KC_TRNS,  KC_TRNS,  KC_TRNS
+                ),
 
   [SCUT_LAYER] = LAYOUT_split_3x5_2(
     M_ESCQ,   M_ESCW,      LCTL(KC_F),  KC_NO,             LCTL(KC_B),  M_WMAX,      KC_NO,   KC_NO,    KC_NO,     KC_DEL,
     M_APP1,   M_APP2,      M_APP3,      M_1PASS,           M_APP4,      M_WMIN,      M_NTRM,  M_EMOJI,  M_ETCTLZ,  KC_INS,
-    KC_CAPS,  LCTL(KC_X),  LCTL(KC_C),  LSFT(LCTL(KC_C)),  LCTL(KC_V),  HYPR(KC_K),  M_DDS,   M_CSPC,    M_DSC,     KC_SLSH,
+    KC_CAPS,  LCTL(KC_X),  LCTL(KC_C),  LSFT(LCTL(KC_C)),  LCTL(KC_V),  HYPR(KC_K),  M_DDS,   M_CSPC,   M_DSC,     KC_SLSH,
     KC_TRNS,  KC_TRNS,     KC_TRNS,     KC_TRNS
   )
 
@@ -128,7 +143,45 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     del_oneshot_mods(MOD_MASK_SHIFT);
   }
 
+  mod_state = get_mods();
+
   switch (keycode) {
+    // Shift-backspace produces delete.
+    case KC_BSPC:
+      if (record->event.pressed) {
+        if (mod_state & MOD_MASK_SHIFT) {
+          del_mods(MOD_MASK_SHIFT);
+          register_code(KC_DEL);
+          kc_del_registered = true;
+          set_mods(mod_state);
+          return false;
+        }
+      } else {
+        if (kc_del_registered) {
+          unregister_code(KC_DEL);
+          kc_del_registered = false;
+          return false;
+        }
+      }
+      break;
+    // Shift-up produces down.
+    case KC_UP:
+      if (record->event.pressed) {
+        if (mod_state & MOD_MASK_SHIFT) {
+          del_mods(MOD_MASK_SHIFT);
+          register_code(KC_DOWN);
+          kc_down_registered = true;
+          set_mods(mod_state);
+          return false;
+        }
+      } else {
+        if (kc_down_registered) {
+          unregister_code(KC_DEL);
+          kc_down_registered = false;
+          return false;
+        }
+      }
+      break;
     case M_ALTT:
       if (record->event.pressed) {
         if (!m_altt_pressed) {
@@ -355,25 +408,18 @@ void post_process_record_user(uint16_t keycode, keyrecord_t *record) {
     case KC_ENT:
       if (!record->event.pressed) { layer_move(BASE_LAYER); }
       break;
-    // Cancel caps lock and return to the base layer if escape is pressed.
-    case KC_ESC:
-      if (host_keyboard_led_state().caps_lock) { tap_code(KC_CAPS); }
-      if (!record->event.pressed) { layer_move(BASE_LAYER); }
-      break;
   }
 }
 
 uint16_t get_tapping_term(uint16_t keycode, keyrecord_t *record) {
   switch (keycode) {
     // Set the tapping term for the homerow mods.
-    case LSFT_T(KC_Q):
     case LCTL_T(KC_W):
     case LALT_T(KC_F):
     case LGUI_T(KC_P):
     case LGUI_T(KC_L):
     case LALT_T(KC_U):
     case LCTL_T(KC_Y):
-    case LSFT_T(KC_BSPC):
       return TAPPING_TERM_MODS;
     // Set the tapping term for the homerow layer toggle keys.
     case LT(CTRL_LAYER, KC_R):
@@ -385,6 +431,9 @@ uint16_t get_tapping_term(uint16_t keycode, keyrecord_t *record) {
       return TAPPING_TERM_LAYER;
     // Set the tapping term for tap dance keys.
     case TD(TD_SPC_TAB):
+    case TD(TD_Q_ESC):
+    case TD(TD_A_TAB):
+    case TD(TD_Z_CAPS):
       return TAPPING_TERM_TAPDANCE;
     default:
       return TAPPING_TERM;

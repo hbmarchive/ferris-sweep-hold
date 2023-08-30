@@ -401,16 +401,6 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
   return true;
 }
 
-void post_process_record_user(uint16_t keycode, keyrecord_t *record) {
-  switch (keycode) {
-    // Return to the base layer if space or enter is pressed.
-    case TD(TD_SPC_TAB):
-    case KC_ENT:
-      if (!record->event.pressed) { layer_move(BASE_LAYER); }
-      break;
-  }
-}
-
 uint16_t get_tapping_term(uint16_t keycode, keyrecord_t *record) {
   switch (keycode) {
     // Set the tapping term for the homerow mods.

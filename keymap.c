@@ -38,16 +38,14 @@ enum my_keycodes {
 
 enum {
   TD_SPC_TAB,
-  TD_Q_ESC,
-  TD_A_TAB,
+  TD_A_ESC,
   TD_Z_CAPS
 };
 
 // Tap Dance definitions
 tap_dance_action_t tap_dance_actions[] = {
     [TD_SPC_TAB] = ACTION_TAP_DANCE_DOUBLE(KC_SPC, KC_TAB),
-    [TD_Q_ESC] = ACTION_TAP_DANCE_DOUBLE(KC_Q, KC_ESC),
-    [TD_A_TAB] = ACTION_TAP_DANCE_DOUBLE(KC_A, KC_TAB),
+    [TD_A_ESC] = ACTION_TAP_DANCE_DOUBLE(KC_A, KC_ESC),
     [TD_Z_CAPS] = ACTION_TAP_DANCE_DOUBLE(KC_Z, KC_CAPS)
 };
 
@@ -71,8 +69,8 @@ static bool kc_down_registered = false;
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
   [BASE_LAYER] = LAYOUT_split_3x5_2(
-    TD(TD_Q_ESC),   LCTL_T(KC_W),          LALT_T(KC_F),         LGUI_T(KC_P),          KC_B,  KC_J,  LGUI_T(KC_L),          LALT_T(KC_U),         LCTL_T(KC_Y),           LSFT_T(KC_BSPC),
-    TD(TD_A_TAB),   LT(CTRL_LAYER, KC_R),  LT(NAV_LAYER, KC_S),  LT(RSYM_LAYER, KC_T),  KC_G,  KC_M,  LT(LSYM_LAYER, KC_N),  LT(NUM_LAYER, KC_E),  LT(FKEYS_LAYER, KC_I),  KC_O,
+    KC_Q,   LCTL_T(KC_W),          LALT_T(KC_F),         LGUI_T(KC_P),          KC_B,  KC_J,  LGUI_T(KC_L),          LALT_T(KC_U),         LCTL_T(KC_Y),           LSFT_T(KC_BSPC),
+    TD(TD_A_ESC),   LT(CTRL_LAYER, KC_R),  LT(NAV_LAYER, KC_S),  LT(RSYM_LAYER, KC_T),  KC_G,  KC_M,  LT(LSYM_LAYER, KC_N),  LT(NUM_LAYER, KC_E),  LT(FKEYS_LAYER, KC_I),  KC_O,
     TD(TD_Z_CAPS),  KC_X,                  KC_C,                 KC_D,                  KC_V,  KC_K,  KC_H,                  KC_COMM,              KC_DOT,                 OSL(SCUT_LAYER),
     OSM(MOD_LSFT),  TD(TD_SPC_TAB),        KC_ENT,               KC_UP
   ),
@@ -121,7 +119,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
   [SCUT_LAYER] = LAYOUT_split_3x5_2(
     M_ESCQ,   M_ESCW,      LCTL(KC_F),  KC_NO,             LCTL(KC_B),  M_WMAX,      KC_NO,   KC_NO,    KC_NO,     KC_DEL,
-    M_APP1,   M_APP2,      M_APP3,      M_1PASS,           M_APP4,      M_WMIN,      M_NTRM,  M_EMOJI,  M_ETCTLZ,  KC_INS,
+    M_APP4,   M_APP1,      M_APP2,      M_1PASS,           M_APP3,      M_WMIN,      M_NTRM,  M_EMOJI,  M_ETCTLZ,  KC_INS,
     KC_CAPS,  LCTL(KC_X),  LCTL(KC_C),  LSFT(LCTL(KC_C)),  LCTL(KC_V),  HYPR(KC_K),  M_DDS,   M_CSPC,   M_DSC,     KC_SLSH,
     KC_TRNS,  KC_TRNS,     KC_TRNS,     KC_TRNS
   )
@@ -421,8 +419,7 @@ uint16_t get_tapping_term(uint16_t keycode, keyrecord_t *record) {
       return TAPPING_TERM_LAYER;
     // Set the tapping term for tap dance keys.
     case TD(TD_SPC_TAB):
-    case TD(TD_Q_ESC):
-    case TD(TD_A_TAB):
+    case TD(TD_A_ESC):
     case TD(TD_Z_CAPS):
       return TAPPING_TERM_TAPDANCE;
     default:

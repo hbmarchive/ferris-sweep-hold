@@ -18,11 +18,13 @@ enum my_keycodes {
     M_CSPC,
     M_DSC,
     M_DDS,
+    M_LIKE,
     M_ALTT,
     M_APP1,
     M_APP2,
     M_APP3,
     M_APP4,
+    M_APP5,
     M_1PASS,
     M_NDESK,
     M_PDESK,
@@ -118,7 +120,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   ),
 
   [SCUT_LAYER] = LAYOUT_split_3x5_2(
-    M_ESCQ,   M_ESCW,      LCTL(KC_F),  KC_NO,             LCTL(KC_B),  M_WMAX,      KC_NO,   KC_NO,    KC_NO,     KC_DEL,
+    M_ESCQ,   M_ESCW,      M_LIKE,      M_APP5,             KC_NO,       M_WMAX,      KC_NO,   KC_NO,    KC_NO,     KC_DEL,
     M_APP4,   M_APP1,      M_APP2,      M_1PASS,           M_APP3,      M_WMIN,      M_NTRM,  M_EMOJI,  M_ETCTLZ,  KC_INS,
     KC_CAPS,  LCTL(KC_X),  LCTL(KC_C),  LSFT(LCTL(KC_C)),  LCTL(KC_V),  HYPR(KC_K),  M_DDS,   M_CSPC,   M_DSC,     KC_SLSH,
     KC_TRNS,  KC_TRNS,     KC_TRNS,     KC_TRNS
@@ -241,6 +243,19 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         }
       }
       break;
+    case M_APP5:
+      if (record->event.pressed) {
+        if (m_is_chromebook) {
+          SEND_STRING(SS_DOWN(X_LALT));
+          SEND_STRING(SS_TAP(X_5));
+          SEND_STRING(SS_UP(X_LALT));
+        } else {
+          SEND_STRING(SS_DOWN(X_LSFT)SS_DOWN(X_LCTL)SS_DOWN(X_LALT)SS_DOWN(X_LGUI));
+          SEND_STRING(SS_TAP(X_5));
+          SEND_STRING(SS_UP(X_LGUI)SS_UP(X_LALT)SS_UP(X_LCTL)SS_UP(X_LSFT));
+        }
+      }
+      break;
     case M_1PASS:
       if (record->event.pressed) {
         if (m_is_chromebook) {
@@ -254,6 +269,21 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
           SEND_STRING(SS_TAP(X_SPC));
           SEND_STRING(SS_UP(X_LCTL)SS_UP(X_LSFT));
         }
+      }
+      break;
+    case M_LIKE:
+      if (record->event.pressed) {
+        if (m_is_chromebook) {
+          SEND_STRING(SS_DOWN(X_LALT)SS_TAP(X_5)SS_UP(X_LALT));
+        } else {
+          SEND_STRING(SS_DOWN(X_LSFT)SS_DOWN(X_LCTL)SS_DOWN(X_LALT)SS_DOWN(X_LGUI));
+          SEND_STRING(SS_TAP(X_5));
+          SEND_STRING(SS_UP(X_LGUI)SS_UP(X_LALT)SS_UP(X_LCTL)SS_UP(X_LSFT));
+        }
+        SEND_STRING(SS_DELAY(100));
+        SEND_STRING(SS_DOWN(X_LSFT)SS_DOWN(X_LALT));
+        SEND_STRING(SS_TAP(X_B));
+        SEND_STRING(SS_UP(X_LALT)SS_UP(X_LSFT));
       }
       break;
     case M_ESCQ:

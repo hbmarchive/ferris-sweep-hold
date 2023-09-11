@@ -58,7 +58,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define TAPPING_TERM_MODS 550
 
 // Tapping term for tapdance keys
-#define TAPPING_TERM_TAPDANCE 160
+#define TAPPING_TERM_TAPDANCE 170
 
 // Tapping term for homerow layer toggle keys
 #define TAPPING_TERM_LAYER 220
